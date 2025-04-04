@@ -1,48 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My PWA</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js');
-      });
-    }
-  </script>
+    <meta charset="UTF-8">
+    <title>CWS Helpdesk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- 🟢 PWA manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#003366" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .header {
+            padding: 0px;
+        }
+
+        .header img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 80px;
+            margin: 0px 20px;
+        }
+
+        .button-link {
+            display: block;
+            max-width: 300px;
+        }
+
+        .button-link img {
+            width: 100%;
+            height: auto;
+            border: 2px solid #003366;
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .button-link img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 🟦 Install button styling */
+        #installBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #installBtn:hover {
+            background-color: #005599;
+        }
+    </style>
 </head>
 <body>
-  <h1>Hello from My PWA!</h1>
-  <p>Welcome to your Progressive Web App.</p>
-  <button id="installBtn" style="display:none; position:fixed; bottom:20px; right:20px; padding:10px 15px; font-size:16px;">Install App</button>
+
+    <div class="header">
+        <img src="HeaderBanner.png" alt="Welcome to CWS Helpdesk Pages">
+    </div>
+
+    <div class="buttons">
+        <a href="https://onecwsplatform.atlassian.net/servicedesk/customer/portal/1" class="button-link">
+            <img src="CWS_Infra_Support_Pure_White.png" alt="ONE CWS IT Helpdesk - Infrastructure Support">
+        </a>
+        <a href="OneCWSComingSoon.html" class="button-link">
+            <img src="CWS_Apps_Support_Pure_White.png" alt="ONE CWS APPS - Application Support">
+        </a>
+    </div>
+
+    <!-- 🟦 Install button -->
+    <button id="installBtn">Install App</button>
+
+    <!-- 🧠 PWA logic -->
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').then(() => {
+                    console.log('Service Worker registered');
+                });
+            });
+        }
+
+        // Install prompt logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+
+            installBtn.addEventListener('click', () => {
+                installBtn.style.display = 'none';
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    console.log('User choice:', choiceResult.outcome);
+                    deferredPrompt = null;
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-<script>
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome's default mini-infobar
-    e.preventDefault();
-    deferredPrompt = e;
-
-    // Show our custom install button
-    installBtn.style.display = 'block';
-
-    installBtn.addEventListener('click', () => {
-      installBtn.style.display = 'none'; // Hide button after click
-      deferredPrompt.prompt(); // Show install prompt
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
-        } else {
-          console.log('User dismissed the A2HS prompt');
-        }
-        deferredPrompt = null;
-      });
-    });
-  });
-</script>
-
