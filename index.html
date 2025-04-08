@@ -9,6 +9,11 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#003366" />
 
+    <!-- ✅ iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -72,6 +77,22 @@
         #installBtn:hover {
             background-color: #005599;
         }
+
+        /* iOS message */
+        #iosTip {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff8dc;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -92,8 +113,20 @@
     <!-- 🟦 Install button -->
     <button id="installBtn">Install App</button>
 
+    <!-- iOS Install Tip -->
+    <div id="iosTip">To install this app, tap <strong>Share</strong> and then <strong>Add to Home Screen</strong>.</div>
+
     <!-- 🧠 PWA logic -->
     <script>
+        // Detect iOS
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+        const isInStandaloneMode = ('standalone' in window.navigator) && window.navigator.standalone;
+        const iosTip = document.getElementById('iosTip');
+
+        if (isIOS && !isInStandaloneMode) {
+            iosTip.style.display = 'block';
+        }
+        
         // Register service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
